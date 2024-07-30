@@ -1,0 +1,7 @@
+.cm-s-cobalt.CodeMirror{
+    height: 100vh;
+    font-size: 18px;
+    padding: 5px;
+    width: calc(100vw-16rem);
+
+}
