@@ -14,13 +14,28 @@ const Editor = ({socketRef,roomId, onCodeChange}) => {
   useEffect(() => {
     const init = async ()=>{
    editorRef.current =  CodeMirror.fromTextArea(document.getElementById("code-text"),{
-        mode: {name:"javascript", json:true},
-        theme:"cobalt",
-        autoCloseBrackets:true,
-        autoCloseTags: true,
-        lineNumbers:true,
-        lineWrapping:true
-      });
+    mode: {
+      name: "javascript", // Default mode
+      json: true,         // Enable JSON mode for JavaScript
+    },
+    theme: "cobalt",
+    autoCloseBrackets: true,
+    autoCloseTags: true,
+    lineNumbers: true,
+    lineWrapping: true,
+    matchBrackets: true,    // Highlight matching brackets
+    styleActiveLine: true,  // Highlight the active line
+    extraKeys: {            // Extra key mappings
+      "Ctrl-Space": "autocomplete",
+      "Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
+    },
+    foldGutter: true,       // Enable code folding
+    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+    highlightSelectionMatches: true, // Highlight all instances of selected text
+    tabSize: 2,             // Set tab size
+    indentUnit: 2,          // Set indentation to 2 spaces
+    indentWithTabs: false   // Use spaces instead of tabs for indentation
+  });
 
 
       editorRef.current.on('change',(instance,chnages)=>{
