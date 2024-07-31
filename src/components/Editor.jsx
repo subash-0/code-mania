@@ -3,40 +3,38 @@ import CodeMirror from 'codemirror';
 import "codemirror/lib/codemirror.css";
 import "codemirror/lib/codemirror"
 import "codemirror/theme/solarized.css"
-import "codemirror/theme/cobalt.css"
-import "codemirror/mode/javascript/javascript"
+import "codemirror/theme/dracula.css"
 import "codemirror/addon/edit/closebrackets"
 import "codemirror/addon/edit/closetag"
+import "codemirror/mode/clike/clike"
+import "codemirror/mode/python/python"
 import "../App.css"
 import ACTIONS from '../assets/Actions';
-const Editor = ({socketRef,roomId, onCodeChange}) => {
+import toast from 'react-hot-toast';
+const Editor = ({socketRef,roomId, onCodeChange, lang, username}) => {
   const editorRef = useRef(null);
   useEffect(() => {
     const init = async ()=>{
    editorRef.current =  CodeMirror.fromTextArea(document.getElementById("code-text"),{
-    mode: {
-      name: "javascript", // Default mode
-      json: true,         // Enable JSON mode for JavaScript
-    },
-    theme: "cobalt",
+    mode: "text/x-c++src",
+    theme: "dracula",
     autoCloseBrackets: true,
     autoCloseTags: true,
     lineNumbers: true,
     lineWrapping: true,
-    matchBrackets: true,    // Highlight matching brackets
-    styleActiveLine: true,  // Highlight the active line
-    extraKeys: {            // Extra key mappings
+    matchBrackets: true,   
+    styleActiveLine: true,  
+    extraKeys: {           
       "Ctrl-Space": "autocomplete",
       "Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
     },
-    foldGutter: true,       // Enable code folding
+    foldGutter: true,       
     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-    highlightSelectionMatches: true, // Highlight all instances of selected text
-    tabSize: 2,             // Set tab size
-    indentUnit: 2,          // Set indentation to 2 spaces
-    indentWithTabs: false   // Use spaces instead of tabs for indentation
+    highlightSelectionMatches: true,
+    tabSize: 2,            
+    indentUnit: 2,          
+    indentWithTabs: false   
   });
-
 
       editorRef.current.on('change',(instance,chnages)=>{
         const {origin} = chnages;
@@ -49,9 +47,39 @@ const Editor = ({socketRef,roomId, onCodeChange}) => {
 
             })
         }
+
+        if(origin ==="paste"){
+         socketRef.current.emit("paste",{
+          username,
+          roomId
+         })
+         
+        }
+
+        if(origin ==="cut"){
+          socketRef.current.emit("cut",{
+            username,
+            roomId
+           })
+        }
+
+
       })
 
+     if(lang === "Java") {
+      editorRef.current.setOption("mode","text/x-java")
+     }else if(lang === "Python"){
+      editorRef.current.setOption("mode","text/x-python")
+     }else{
       
+      editorRef.current.setOption("mode","text/x-c++src")
+     }
+
+     editorRef.current.on("copy",()=>{
+      socketRef.current.emit("copy",{
+        username,roomId
+      })
+     })
 
     }
 
@@ -73,9 +101,9 @@ const Editor = ({socketRef,roomId, onCodeChange}) => {
   
 
   return (
-    <div className='h-screen w-full'>
+    <div className='h-full w-full'>
     
-    <textarea name="" id="code-text"> </textarea>
+    <textarea name="" id="code-text" defaultValue="// Your C++ code here"  /> 
     </div>
   )
 }

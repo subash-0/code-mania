@@ -51,7 +51,30 @@ io.on('connection', (socket) => {
 
    socket.on(ACTIONS.CODE_CHANGE,({roomId,code})=>{
     socket.in(roomId).emit(ACTIONS.CODE_CHANGE,{ code});
-   })
+   });
+
+
+   socket.on("copy",({roomId,username})=>{
+    console.log(roomId)
+    socket.in(roomId).emit("copy",{
+        username
+    })
+   });
+      socket.on("paste",({roomId,username})=>{
+    console.log(roomId)
+    socket.in(roomId).emit("paste",{
+        username
+    })
+   }); 
+ socket.on("cut",({roomId,username})=>{
+    console.log(roomId)
+    socket.in(roomId).emit("cut",{
+        username
+    })
+   });
+   
+
+
 
    socket.on(ACTIONS.SYNC_CODE,({code,socketId})=>{
         io.to(socketId).emit(ACTIONS.CODE_CHANGE,{code})
